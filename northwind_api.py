@@ -112,7 +112,7 @@ def postCustomer(customer_id,CompanyName,ContactName,ContactTitle,Address,City,R
 		return resp
 
 #url to get orderhistory of a customer
-@app.route('/orderhistory/<string:customer_id>',methods=['GET'])
+@app.route('/customers/orderhistory/<string:customer_id>',methods=['GET'])
 def get_oder_details(customer_id):
 	try:
 		customer_id.upper()
@@ -145,7 +145,7 @@ def get_oder_details(customer_id):
 				for i in items:
 					del i['CustomerId']
 			#rows=cur.fetchone()
-				l={'CustomerID':customer_id}
+				l={'CustomerID':customer_id,'No.of_Orders_in_Total':len(items)}
 				l['OrderHistory']=items
 				resp=jsonify(l)
 				resp.status_code=200
@@ -157,40 +157,11 @@ def get_oder_details(customer_id):
 	finally:
 		return resp
 
-@app.route('/customers/select/<string:customer_id>',methods=['GET'])    #url to sleect customers based on cust_id
 
-def get(customer_id):
-	try:
-		#customer_id=request.args['args1']
-		customer_id.upper()
-		cur = mysql.connect().cursor()
-		cur.execute("select * from customers where CustomerID=%s",customer_id)
-		result=cur.fetchall()
-		if len(result)==0:
-			resp=jsonify({"error message":"invalid customer id"})
-			resp.status_code=404
-		else:
-			items={}	#print(result)
-			for row in result:
-				i=0
-				for key in cur.description:
-
-					items[key[0]]=row[i]
-					i+=1
-			#rows=cur.fetchone()
-			resp=jsonify({'Customer_Details':items})
-			resp.status_code=200
-			cur.close()
-	except Exception as e:
-		resp=jsonify({'error message':'{}'.format(e)})
-		resp.status_code=400
-		
-	finally:
-		return resp
 
 @app.route('/products/select/<string:product_id>',methods=['GET'])    #url to select products based on product_id
 
-def getProducts(product_id):
+def getProduct(product_id):
 	try:
 		
 		cur = mysql.connect().cursor()
@@ -220,7 +191,7 @@ def getProducts(product_id):
 		return resp
 
 @app.route('/products/insert/<string:product_id>/<string:ProductName>/<string:SupplierID>/<string:CategoryID>/<string:Quantity>/<string:UnitPrice>/<string:UnitsInStock>/<string:UnitsOnOrder>/<string:ReorderLevel>/<string:Discontinued>',methods=['POST'])
-def postProducts(product_id,ProductName,SupplierID,CategoryID,Quantity,UnitPrice,UnitsInStock,UnitsOnOrder,ReorderLevel,Discontinued):
+def postProduct(product_id,ProductName,SupplierID,CategoryID,Quantity,UnitPrice,UnitsInStock,UnitsOnOrder,ReorderLevel,Discontinued):
 	try:
 
 		#customer_id.upper()
